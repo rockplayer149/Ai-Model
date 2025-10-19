@@ -1,0 +1,360 @@
+import requests
+import json
+
+# API Configuration
+API_URL = "http://localhost:5001"
+
+def test_email(email_text, description=""):
+    """Test a single email"""
+    print("\n" + "="*70)
+    if description:
+        print(f"Testing: {description}")
+    print("="*70)
+    
+    try:
+        response = requests.post(
+            f"{API_URL}/predict",
+            json={"text": email_text},
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            # Display results
+            verdict = result.get('verdict', 'unknown').upper()
+            confidence = result.get('confidence', 0) * 100
+            classification = result.get('classification', 'Unknown')
+            
+            # Color code based on verdict
+            if verdict == 'HAM':
+                icon = "✅"
+                color = "SAFE"
+            elif verdict == 'SPAM':
+                icon = "⚠️"
+                color = "SPAM"
+            elif verdict == 'PHISHING':
+                icon = "🚨"
+                color = "DANGER"
+            else:
+                icon = "❓"
+                color = "UNKNOWN"
+            
+            print(f"\n{icon} Result: {color}")
+            print(f"   Classification: {classification}")
+            print(f"   Confidence: {confidence:.1f}%")
+            
+            # Show probabilities
+            probs = result.get('probabilities', {})
+            print(f"\n   Probabilities:")
+            print(f"      Legitimate: {probs.get('legitimate', 0)*100:.1f}%")
+            print(f"      Spam:       {probs.get('spam', 0)*100:.1f}%")
+            print(f"      Phishing:   {probs.get('phishing', 0)*100:.1f}%")
+            
+            # Show explanation
+            explanation = result.get('explanation', [])
+            if explanation:
+                print(f"\n   Reasons:")
+                for reason in explanation:
+                    print(f"      • {reason}")
+            
+            return result
+        else:
+            print(f"❌ Error: {response.status_code}")
+            print(f"   {response.text}")
+            return None
+            
+    except requests.exceptions.ConnectionError:
+        print("❌ Error: Could not connect to API server")
+        print("   Make sure the server is running: python app.py")
+        return None
+    except requests.exceptions.Timeout:
+        print("❌ Error: Request timed out")
+        return None
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return None
+
+def check_server_health():
+    """Check if server is healthy"""
+    print("\n" + "="*70)
+    print("Checking Server Health")
+    print("="*70)
+    
+    try:
+        response = requests.get(f"{API_URL}/health", timeout=5)
+        if response.status_code == 200:
+            result = response.json()
+            print(f"\n✅ Server Status: {result.get('status', 'unknown')}")
+            print(f"   Model Loaded: {result.get('model_loaded', False)}")
+            print(f"   Working Dir: {result.get('working_directory', 'N/A')}")
+            return True
+        else:
+            print(f"❌ Server returned error: {response.status_code}")
+            return False
+    except requests.exceptions.ConnectionError:
+        print("❌ Cannot connect to server at", API_URL)
+        print("   Start the server with: python app.py")
+        return False
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
+
+def get_model_info():
+    """Get model information"""
+    try:
+        response = requests.get(f"{API_URL}/info", timeout=5)
+        if response.status_code == 200:
+            info = response.json()
+            print("\n" + "="*70)
+            print("Model Information")
+            print("="*70)
+            print(f"\n   Name: {info.get('model_name', 'Unknown')}")
+            print(f"   Version: {info.get('version', 'Unknown')}")
+            
+            classes = info.get('classes', {})
+            if isinstance(classes, dict):
+                print(f"   Classes:")
+                for key, value in classes.items():
+                    print(f"      {key}: {value}")
+            
+            print(f"   Features: {info.get('features', 0)}")
+            print(f"   Description: {info.get('description', 'N/A')}")
+            return True
+    except:
+        print("\n⚠️  Could not fetch model info")
+        return False
+
+def run_test_suite():
+    """Run a suite of test emails"""
+    
+    # Check server health first
+    if not check_server_health():
+        return
+    
+    # Get model info
+    get_model_info()
+    
+    # Test cases
+    test_cases = [
+        {
+            "description": "Legitimate Work Email",
+            "text": """Subject: Q4 Project Update
+From: john.doe@company.com
+
+Hi team,
+
+Attached is the Q4 report. Let's discuss in tomorrow's meeting at 2 PM.
+
+Best regards,
+John"""
+        },
+        {
+            "description": "Legitimate Password Reset",
+            "text": """Subject: Password Reset Request
+From: no-reply@accounts.google.com
+
+Hello,
+
+You recently requested to reset your password for your Google Account.
+
+Your verification code is: 847293
+
+This code will expire in 10 minutes.
+
+Thanks,
+The Google Accounts Team"""
+        },
+        {
+            "description": "Legitimate Banking Alert",
+            "text": """Subject: Transaction Alert
+From: alerts@chase.com
+
+Dear Customer,
+
+A transaction was processed on your Chase checking account ending in **4892.
+
+Amount: $45.99
+Merchant: Starbucks #1234
+Date: January 15, 2024
+
+Your current balance is $2,450.32
+
+Chase Bank - Member FDIC"""
+        },
+        {
+            "description": "Spam - Retail Marketing",
+            "text": """Subject: 40% OFF This Weekend Only!
+From: deals@fashionstore.com
+
+Hi Sarah,
+
+Don't miss our weekend sale - 40% off everything!
+
+Shop Now: https://fashionstore.com/sale
+
+Unsubscribe | Manage Preferences
+
+Fashion Store Inc.
+123 Fashion Ave, New York, NY 10001
+© 2024 Fashion Store. All rights reserved."""
+        },
+        {
+            "description": "Spam - App Promotion",
+            "text": """Subject: Download Our App - Get 50% Off
+From: team@fooddelivery.com
+
+Hello,
+
+Get our app and enjoy 50% off your first order!
+
+📱 Available on iOS and Android
+
+Download: https://fooddelivery.com/app
+
+Unsubscribe from promotional emails"""
+        },
+        {
+            "description": "Phishing - Account Suspension",
+            "text": """Subject: URGENT: Account Suspended
+From: security@paypa1-verify.com
+
+Dear Customer,
+
+Your PayPal account has been suspended due to suspicious activity.
+
+You must verify immediately: http://192.168.1.100/verify
+
+WARNING: You have 24 hours or account will be closed permanently.
+
+Enter your password and credit card to confirm."""
+        },
+        {
+            "description": "Phishing - Fake Invoice",
+            "text": """Subject: Unauthorized Charge - Action Required
+From: billing@amaz0n-secure.xyz
+
+Dear Customer,
+
+An unauthorized purchase of $499.99 has been charged to your account.
+
+If you did not authorize this, click here immediately:
+http://bit.ly/cancel-order-now
+
+You must update your billing information and password within 12 hours."""
+        }
+    ]
+    
+    # Run tests
+    results = []
+    for test_case in test_cases:
+        result = test_email(test_case["text"], test_case["description"])
+        results.append(result)
+    
+    # Summary
+    print("\n" + "="*70)
+    print("TEST SUMMARY")
+    print("="*70)
+    
+    successful = sum(1 for r in results if r is not None)
+    total = len(results)
+    
+    if successful == total:
+        print(f"\n✅ All {total} tests completed successfully!")
+    else:
+        failed = total - successful
+        print(f"\n⚠️  {failed} tests failed out of {total}")
+    
+    print("="*70 + "\n")
+
+def interactive_test():
+    """Interactive testing mode"""
+    print("\n" + "="*70)
+    print("INTERACTIVE EMAIL TESTING")
+    print("="*70)
+    print("\nPaste your email content below.")
+    print("Press Enter twice when done, or type 'quit' to exit.\n")
+    
+    while True:
+        lines = []
+        print("Email content:")
+        while True:
+            try:
+                line = input()
+                if line.lower() == 'quit':
+                    return
+                if line == '':
+                    if lines:
+                        break
+                    else:
+                        continue
+                lines.append(line)
+            except EOFError:
+                return
+        
+        if not lines:
+            break
+        
+        email_text = '\n'.join(lines)
+        test_email(email_text)
+        
+        print("\n" + "-"*70)
+        try:
+            cont = input("\nTest another email? (yes/no): ").lower()
+            if cont not in ['yes', 'y']:
+                break
+        except EOFError:
+            break
+
+def test_single_quick():
+    """Quick single email test"""
+    print("\n" + "="*70)
+    print("QUICK EMAIL TEST")
+    print("="*70)
+    
+    sample_email = """Subject: URGENT: Account Suspended
+From: security@paypa1-verify.com
+
+Your account has been suspended. Click here immediately: http://192.168.1.1"""
+    
+    print("\nTesting sample phishing email...")
+    test_email(sample_email, "Sample Phishing Email")
+
+def main():
+    """Main function"""
+    print("\n" + "="*70)
+    print("EMAIL CLASSIFIER API TEST CLIENT")
+    print("="*70)
+    print("\nOptions:")
+    print("  1. Run Test Suite (7 sample emails)")
+    print("  2. Interactive Testing (test your own emails)")
+    print("  3. Quick Single Test")
+    print("  4. Check Server Health")
+    print("  5. Get Model Info")
+    print("  6. Exit")
+    print("="*70)
+    
+    try:
+        choice = input("\nEnter choice (1-6): ").strip()
+        
+        if choice == '1':
+            run_test_suite()
+        elif choice == '2':
+            interactive_test()
+        elif choice == '3':
+            test_single_quick()
+        elif choice == '4':
+            check_server_health()
+        elif choice == '5':
+            get_model_info()
+        elif choice == '6':
+            print("\nGoodbye!\n")
+            return
+        else:
+            print("\n❌ Invalid choice!\n")
+    except (EOFError, KeyboardInterrupt):
+        print("\n\nExiting...\n")
+
+if __name__ == "__main__":
+    main()

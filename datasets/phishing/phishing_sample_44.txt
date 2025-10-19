@@ -1,0 +1,12 @@
+Subject: IRS Tax Refund Notification
+From: refunds@irs-tax-refund.org
+
+Dear Taxpayer,
+
+You are eligible for a tax refund of $1,247.56. To receive your refund, please submit your information.
+
+Click here to claim: http://irs-refund-process.fake.com
+
+You must claim within 7 days or the refund will be forfeited.
+
+Internal Revenue Service

@@ -1,0 +1,12 @@
+Subject: Failed Delivery Attempt - Action Required
+From: delivery@fedex-parcel.com
+
+Tracking Number: 1234567890
+
+We attempted to deliver your package but no one was available. Your package is being held.
+
+Update delivery information: http://fedex-redelivery.malicious.com
+
+If you don't respond within 3 days, your package will be returned to sender.
+
+FedEx Customer Service

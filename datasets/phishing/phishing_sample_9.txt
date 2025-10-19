@@ -1,0 +1,13 @@
+Subject: SECURITY ALERT Account Verification Required
+From: security@paypa1-verify.com
+
+Dear Valued Customer,
+
+Your PayPal account has been limited due to unusual activity detected. To restore full access, please verify your identity immediately.
+
+Click here to verify: http://paypal-secure-verify.suspicious-site.com/login
+
+If you do not verify within 24 hours, your account will be permanently suspended.
+
+Thank you,
+PayPal Security Team

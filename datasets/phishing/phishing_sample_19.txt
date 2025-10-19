@@ -1,0 +1,14 @@
+Subject: Your Bank Account Has Been Suspended
+From: alerts@bank-security.net
+
+URGENT SECURITY ALERT
+
+We detected suspicious login attempts to your bank account from an unknown location.
+
+Your account has been temporarily suspended for your protection.
+
+CLICK HERE TO REACTIVATE: http://bank-restore-access.phishing.com
+
+Failure to verify within 48 hours will result in permanent account closure.
+
+Customer Security Department

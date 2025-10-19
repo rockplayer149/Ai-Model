@@ -1,0 +1,12 @@
+Subject: Outstanding Invoice - Payment Overdue
+From: billing@company-invoices.biz
+
+Invoice #98765 is now 30 days overdue.
+
+Amount due: $5,420.00
+
+Pay immediately to avoid legal action: http://pay-invoice.scam.com
+
+Late fees are accruing daily.
+
+Accounting Department

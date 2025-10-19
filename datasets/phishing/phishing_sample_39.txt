@@ -1,0 +1,10 @@
+Subject: Password Reset Request
+From: no-reply@account-security.net
+
+Someone requested a password reset for your account.
+
+If this wasn't you, click here immediately to secure your account: http://reset-password.phishing.net
+
+Your account may be compromised. Act fast!
+
+Security Team

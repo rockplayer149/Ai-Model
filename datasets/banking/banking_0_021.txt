@@ -1,0 +1,19 @@
+Subject: Transaction Alert - Your Account
+From: alerts@chase.com
+
+Dear Customer,
+
+A transaction was processed on your Chase checking account ending in **4892.
+
+Amount: $4138.50
+Merchant: Amazon.com
+Date: January 15, 2024
+
+Your current balance is $8811.00
+
+If you don't recognize this transaction, please contact us immediately at 1-800-935-9935.
+
+For your security, we monitor your account 24/7.
+
+Chase Bank
+Member FDIC

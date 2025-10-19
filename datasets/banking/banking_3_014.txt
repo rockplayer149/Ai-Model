@@ -1,0 +1,18 @@
+Subject: Security Alert - New Device Login
+From: security@paypal.com
+
+Hi,
+
+We noticed a login to your PayPal account from a new device.
+
+Device: iPhone 12
+Location: New York, NY
+Time: January 15, 2024 at 2:34 PM EST
+
+Was this you?
+Yes, it was me: https://paypal.com/confirm
+No, it wasn't me: https://paypal.com/security
+
+For your security, we recommend enabling two-factor authentication.
+
+PayPal Security Team
