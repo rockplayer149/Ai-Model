@@ -1,38 +1,64 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  position: relative;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Watch Dogs glitch effect */
+@keyframes glitch {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(255, 0, 0, 0.8),
+      0 0 20px rgba(255, 0, 0, 0.6);
+  }
+  25% {
+    text-shadow: 
+      -2px 0 10px rgba(255, 0, 0, 0.8),
+      2px 2px 20px rgba(255, 0, 0, 0.6);
+    transform: translate(1px, 0);
+  }
+  50% {
+    text-shadow: 
+      2px 0 10px rgba(255, 0, 0, 0.8),
+      -2px -2px 20px rgba(255, 0, 0, 0.6);
+    transform: translate(-1px, 0);
+  }
+  75% {
+    text-shadow: 
+      0 0 10px rgba(255, 0, 0, 0.8),
+      0 0 20px rgba(255, 0, 0, 0.6);
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Smooth transitions */
+button, input, select, textarea, [role="button"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.App-link {
-  color: #61dafb;
+/* Focus styles */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #ff0000;
+  outline-offset: 2px;
 }
 
-@keyframes App-logo-spin {
+/* Smooth fade-in */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Custom selection */
+::selection {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ffffff;
 }
