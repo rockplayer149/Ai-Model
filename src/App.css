@@ -3,7 +3,16 @@
   position: relative;
 }
 
-/* Watch Dogs glitch effect */
+/* Card hover effects - subtle 3D without breaking layout */
+.border-red-500\/30 {
+  transition: all 0.3s ease;
+}
+
+.border-red-500\/30:hover {
+  box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+}
+
+/* Glitch effect */
 @keyframes glitch {
   0%, 100% {
     text-shadow: 
@@ -31,21 +40,31 @@
 
 /* Smooth transitions */
 button, input, select, textarea, [role="button"] {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Focus styles */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Focus styles with glow */
 button:focus-visible,
 input:focus-visible {
   outline: 2px solid #ff0000;
   outline-offset: 2px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
 }
 
 /* Smooth fade-in */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -54,11 +73,26 @@ input:focus-visible {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Custom selection */
+/* Custom selection with glow */
 ::selection {
   background: rgba(255, 0, 0, 0.3);
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+/* Card effects */
+.bg-black\/60 {
+  box-shadow: 
+    0 10px 30px rgba(255, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.bg-black\/60:hover {
+  box-shadow: 
+    0 15px 40px rgba(255, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 0, 0, 0.2);
 }

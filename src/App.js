@@ -42,14 +42,22 @@ const InfoRow = ({ label, value }) => (
 const LinkRow = ({ link }) => {
     let reputationColor = 'text-gray-500';
     let reputationIcon = '?';
+    let reputationText = 'N/A';
     
-    if (link.reputation?.status === 'Found') {
-        if (link.reputation.isMalicious) {
-            reputationColor = 'text-red-400';
-            reputationIcon = '!';
+    if (link.reputation) {
+        if (link.reputation.status === 'Found') {
+            reputationText = `VT: ${link.reputation.score}`;
+            if (link.reputation.isMalicious) {
+                reputationColor = 'text-red-400';
+                reputationIcon = '!';
+            } else {
+                reputationColor = 'text-green-400';
+                reputationIcon = '✓';
+            }
         } else {
-            reputationColor = 'text-green-400';
-            reputationIcon = '✓';
+            reputationText = link.reputation.status;
+            reputationColor = 'text-yellow-400';
+            reputationIcon = '-';
         }
     }
     
@@ -57,7 +65,10 @@ const LinkRow = ({ link }) => {
         <div className="border-t border-red-900/30 py-1.5 hover:bg-red-950/20 px-1 transition-all">
             <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] text-red-400 truncate flex-1">{link.domain}</span>
-                <span className={`text-[10px] font-bold ${reputationColor}`}>[{reputationIcon}]</span>
+                <div className="flex items-center gap-1">
+                    <span className={`text-[9px] font-mono ${reputationColor}`}>{reputationText}</span>
+                    <span className={`text-[10px] font-bold ${reputationColor}`}>[{reputationIcon}]</span>
+                </div>
             </div>
             <p className="text-[9px] text-gray-500 truncate mt-0.5" title={link.url}>{link.url}</p>
         </div>
@@ -153,6 +164,7 @@ function App() {
 
     return (
         <div className="min-h-screen p-4 font-mono">
+            <div className="scanline-overlay"></div>
             <div className="max-w-5xl mx-auto">
                 
                 {/* Compact Header */}
@@ -269,55 +281,49 @@ function App() {
                                     [ FORENSIC REPORT ]
                                 </div>
 
-                                {/* Two Column Layout for Compact View */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Single Column Layout - FIXED */}
+                                <div className="space-y-3">
                                     
-                                    {/* Left Column */}
-                                    <div className="space-y-3">
-                                        <Section title="Header Data" defaultOpen={true}>
-                                            <InfoRow label="FROM" value={analysisResult.forensicReport.senderInfo.from} />
-                                            <InfoRow label="TO" value={analysisResult.forensicReport.senderInfo.to} />
-                                            <InfoRow label="SUBJECT" value={analysisResult.forensicReport.senderInfo.subject} />
-                                            <div className="flex gap-1 mt-2">
-                                                <StatusPill pass={analysisResult.forensicReport.authResults.spf.pass} text="SPF"/>
-                                                <StatusPill pass={analysisResult.forensicReport.authResults.dkim.pass} text="DKIM"/>
-                                                <StatusPill pass={analysisResult.forensicReport.authResults.dmarc.pass} text="DMARC"/>
+                                    <Section title="Header Data" defaultOpen={true}>
+                                        <InfoRow label="FROM" value={analysisResult.forensicReport.senderInfo.from} />
+                                        <InfoRow label="TO" value={analysisResult.forensicReport.senderInfo.to} />
+                                        <InfoRow label="SUBJECT" value={analysisResult.forensicReport.senderInfo.subject} />
+                                        <div className="flex gap-1 mt-2">
+                                            <StatusPill pass={analysisResult.forensicReport.authResults.spf.pass} text="SPF"/>
+                                            <StatusPill pass={analysisResult.forensicReport.authResults.dkim.pass} text="DKIM"/>
+                                            <StatusPill pass={analysisResult.forensicReport.authResults.dmarc.pass} text="DMARC"/>
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Content Scan" defaultOpen={true}>
+                                        <InfoRow label="HTML" value={analysisResult.forensicReport.contentAnalysis.hasHtml ? 'YES' : 'NO'} />
+                                        <InfoRow label="JS TAGS" value={analysisResult.forensicReport.contentAnalysis.scriptTagCount} />
+                                        <InfoRow label="INLINE JS" value={analysisResult.forensicReport.contentAnalysis.inlineJsCount} />
+                                    </Section>
+
+                                    <Section title={`Attachments [${analysisResult.forensicReport.attachmentAnalysis.count}]`} defaultOpen={false}>
+                                        {analysisResult.forensicReport.attachmentAnalysis.count === 0 ? (
+                                            <p className="text-gray-400 text-[10px]">NONE</p>
+                                        ) : (
+                                            <div className="max-h-40 overflow-y-auto pr-1 space-y-1">
+                                                {analysisResult.forensicReport.attachmentAnalysis.attachments.map((att, i) => 
+                                                    <AttachmentRow key={i} att={att}/>
+                                                )}
                                             </div>
-                                        </Section>
+                                        )}
+                                    </Section>
 
-                                        <Section title="Content Scan" defaultOpen={true}>
-                                            <InfoRow label="HTML" value={analysisResult.forensicReport.contentAnalysis.hasHtml ? 'YES' : 'NO'} />
-                                            <InfoRow label="JS TAGS" value={analysisResult.forensicReport.contentAnalysis.scriptTagCount} />
-                                            <InfoRow label="INLINE JS" value={analysisResult.forensicReport.contentAnalysis.inlineJsCount} />
-                                        </Section>
-                                    </div>
-
-                                    {/* Right Column */}
-                                    <div className="space-y-3">
-                                        <Section title={`Attachments [${analysisResult.forensicReport.attachmentAnalysis.count}]`} defaultOpen={false}>
-                                            {analysisResult.forensicReport.attachmentAnalysis.count === 0 ? (
-                                                <p className="text-gray-400 text-[10px]">NONE</p>
-                                            ) : (
-                                                <div className="max-h-40 overflow-y-auto pr-1 space-y-1">
-                                                    {analysisResult.forensicReport.attachmentAnalysis.attachments.map((att, i) => 
-                                                        <AttachmentRow key={i} att={att}/>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </Section>
-
-                                        <Section title={`Links [${analysisResult.forensicReport.linkAnalysis.links.length}]`} defaultOpen={false}>
-                                            {analysisResult.forensicReport.linkAnalysis.links.length === 0 ? (
-                                                <p className="text-gray-400 text-[10px]">NONE</p>
-                                            ) : (
-                                                <div className="max-h-40 overflow-y-auto pr-1 space-y-1">
-                                                    {analysisResult.forensicReport.linkAnalysis.links.map((link, i) => 
-                                                        <LinkRow key={i} link={link} />
-                                                    )}
-                                                </div>
-                                            )}
-                                        </Section>
-                                    </div>
+                                    <Section title={`Links [${analysisResult.forensicReport.linkAnalysis.links.length}]`} defaultOpen={false}>
+                                        {analysisResult.forensicReport.linkAnalysis.links.length === 0 ? (
+                                            <p className="text-gray-400 text-[10px]">NONE</p>
+                                        ) : (
+                                            <div className="max-h-40 overflow-y-auto pr-1 space-y-1">
+                                                {analysisResult.forensicReport.linkAnalysis.links.map((link, i) => 
+                                                    <LinkRow key={i} link={link} />
+                                                )}
+                                            </div>
+                                        )}
+                                    </Section>
                                 </div>
                             </div>
                         ) : (
